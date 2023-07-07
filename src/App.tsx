@@ -2,10 +2,10 @@ import React from 'react';
 import './App.css';
 import {Todolist} from "./components/Todolist";
 import {useDispatch, useSelector} from "react-redux";
-import {RootStateType} from "./store";
-import {AllTasksType, TodolistType} from "./type/type";
+import {RootStateType} from "./state/store";
+import {FilterType, TodolistType} from "./type/type";
 import {AddItemForm} from "./components/AddItemForm";
-import {addTodolistAC} from "./reducers/todolistReducer";
+import {addTodolistAC, changeFilterAC} from "./state/reducers/todolistReducer";
 
 function App() {
     const dispatch = useDispatch()
@@ -19,9 +19,14 @@ function App() {
             <AddItemForm callback={addTodolist} />
             {
                 todolistsState.map(tl => {
+                    const changeFilter = (value: FilterType) => {
+                        dispatch(changeFilterAC(tl.id, value))
+                    }
                     return <Todolist key={tl.id}
                                      todolistID={tl.id}
                                      title={tl.title}
+                                     changeFilter={changeFilter}
+                                     filter={tl.filter}
                     />
                 })
             }

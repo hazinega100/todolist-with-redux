@@ -1,4 +1,4 @@
-import {AllTasksType, TaskType} from "../type/type";
+import {AllTasksType, TaskType} from "../../type/type";
 import {v1} from "uuid";
 import {newTodolistID, todolistID_1, todolistID_2} from "./todolistReducer";
 
@@ -15,22 +15,8 @@ const initState: AllTasksType = {
     ]
 }
 
-// type AddTaskACType = ReturnType<typeof addTaskAC>
-type AddTaskACType = {
-    type: "ADD-TASK"
-    payload: {
-        todolistID: string
-        title: string
-    }
-}
-// type RemoveTaskACType = ReturnType<typeof removeTaskAC>
-type RemoveTaskACType = {
-    type: "REMOVE-TASK"
-    payload: {
-        todolistID: string
-        taskID: string
-    }
-}
+type AddTaskACType = ReturnType<typeof addTaskAC>
+type RemoveTaskACType = ReturnType<typeof removeTaskAC>
 type AddTodolistType = {
     type: "ADD-TODOLIST"
 }
@@ -38,17 +24,13 @@ type RemoveTodolistType = {
     type: "REMOVE-TODOLIST"
     todolistID: string
 }
-// type ChangeTaskStatusType = ReturnType<typeof changeStatusTaskAC>
-type ChangeTaskStatusType = {
-    type: "CHANGE-TASK-STATUS"
-    payload: {
-        todolistID: string
-        taskID: string
-        newTaskStatus: boolean
-    }
-}
+type ChangeTaskStatusType = ReturnType<typeof changeStatusTaskAC>
 
-type ActionType = AddTaskACType | RemoveTaskACType | AddTodolistType | ChangeTaskStatusType | RemoveTodolistType
+type ActionType = AddTaskACType
+    | RemoveTaskACType
+    | AddTodolistType
+    | ChangeTaskStatusType
+    | RemoveTodolistType
 
 export const tasksReducer = (state = initState, action: ActionType): AllTasksType => {
     switch (action.type) {
@@ -59,6 +41,7 @@ export const tasksReducer = (state = initState, action: ActionType): AllTasksTyp
             }
         }
         case "REMOVE-TODOLIST": {
+            // Нужно доделать
             return state
         }
         case "ADD-TASK": {
@@ -93,7 +76,7 @@ export const addTaskAC = (todolistID: string, title: string) => {
             todolistID,
             title
         }
-    }
+    } as const
 }
 
 export const removeTaskAC = (todolistID: string, taskID: string) => {
@@ -103,7 +86,7 @@ export const removeTaskAC = (todolistID: string, taskID: string) => {
             todolistID,
             taskID
         }
-    }
+    } as const
 }
 
 export const changeStatusTaskAC = (todolistID: string, taskID: string, newTaskStatus: boolean) => {
@@ -114,5 +97,5 @@ export const changeStatusTaskAC = (todolistID: string, taskID: string, newTaskSt
             taskID,
             newTaskStatus
         }
-    }
+    } as const
 }
