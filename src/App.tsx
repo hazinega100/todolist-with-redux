@@ -1,5 +1,5 @@
-import React, {useCallback} from 'react';
-import './App.css';
+import React, {useCallback} from "react";
+import "./App.css";
 import {Todolist} from "./components/Todolist";
 import {useDispatch, useSelector} from "react-redux";
 import {RootStateType} from "./state/store";
@@ -14,19 +14,20 @@ function App() {
 
     const addTodolist = useCallback((title: string) => {
         dispatch(addTodolistAC(title))
-    },[])
+    }, [])
+    const changeFilter = useCallback((todolistID: string, value: FilterType) => {
+        dispatch(changeFilterAC(todolistID, value))
+    }, [])
     return (
         <div className="App">
-            <AddItemForm callback={addTodolist} />
+            <AddItemForm callback={addTodolist}/>
             {
                 todolistsState.map(tl => {
-                    const changeFilter = (value: FilterType) => {
-                        dispatch(changeFilterAC(tl.id, value))
-                    }
+
                     return <Todolist key={tl.id}
                                      todolistID={tl.id}
                                      title={tl.title}
-                                     changeFilter={changeFilter}
+                                     changeFilter={ (value: FilterType) => changeFilter(tl.id, value) }
                                      filter={tl.filter}
                     />
                 })
