@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useCallback} from 'react';
 import './App.css';
 import {Todolist} from "./components/Todolist";
 import {useDispatch, useSelector} from "react-redux";
@@ -8,12 +8,13 @@ import {AddItemForm} from "./components/AddItemForm";
 import {addTodolistAC, changeFilterAC} from "./state/reducers/todolistReducer";
 
 function App() {
+    console.log("App rendered")
     const dispatch = useDispatch()
     const todolistsState = useSelector<RootStateType, TodolistType[]>(state => state.todolists)
 
-    const addTodolist = (title: string) => {
+    const addTodolist = useCallback((title: string) => {
         dispatch(addTodolistAC(title))
-    }
+    },[])
     return (
         <div className="App">
             <AddItemForm callback={addTodolist} />

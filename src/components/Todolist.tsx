@@ -1,4 +1,4 @@
-import React, {ChangeEvent} from 'react';
+import React, {ChangeEvent, useCallback} from 'react';
 import {AllTasksType, FilterType} from "../type/type";
 import {useDispatch, useSelector} from "react-redux";
 import {RootStateType} from "../state/store";
@@ -21,11 +21,12 @@ export const Todolist: React.FC<TodolistPropsType> = (
         filter
     }
 ) => {
+    console.log("Todolist rendered")
     const tasksState = useSelector<RootStateType, AllTasksType>(state => state.tasks)
     const dispatch = useDispatch()
-    const addTask = (title: string) => {
+    const addTask = useCallback((title: string) => {
         dispatch(addTaskAC(todolistID, title))
-    }
+    }, [])
     const removeTodolist = () => {
         dispatch(removeTodolistAC(todolistID))
     }
