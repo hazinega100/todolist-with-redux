@@ -2,10 +2,11 @@ import React, {ChangeEvent, KeyboardEvent, useState} from 'react';
 
 type AddItemFormPropsType = {
     callback: (title: string) => void
+    color?: string
 }
 
 export const AddItemForm: React.FC<AddItemFormPropsType> = React.memo(
-    ({callback}) => {
+    ({callback, color}) => {
         console.log("AddItemForm rendered")
         const [title, setTitle] = useState("")
         const [error, setError] = useState(false)
@@ -36,6 +37,7 @@ export const AddItemForm: React.FC<AddItemFormPropsType> = React.memo(
                        value={title}
                        onChange={onChangeHandler}
                        onKeyPress={pressedEnter}
+                       style={{borderColor: color, color: color, outline: "none"}}
                 />
                 <button onClick={onClickAddItem}>+</button>
                 {error && <div className="error">Title is required</div>}
