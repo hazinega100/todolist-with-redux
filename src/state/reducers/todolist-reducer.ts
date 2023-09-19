@@ -1,5 +1,7 @@
 import {FilterType, TodolistType} from "../../type/type";
 import {v1} from "uuid";
+import {Dispatch} from "redux";
+import {todolistsApi} from "../../api/todolistsApi";
 
 // export const todolistID_1 = v1()
 // export const todolistID_2 = v1()
@@ -80,4 +82,12 @@ export const changeFilterAC = (todolistID: string, value: FilterType) => {
             value
         }
     } as const
+}
+
+
+export const getTodosTC = () => (dispatch: Dispatch) => {
+    todolistsApi.getTodolists()
+        .then(response => {
+            dispatch(getTodolistAC(response.data))
+        })
 }

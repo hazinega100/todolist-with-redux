@@ -2,26 +2,18 @@ import React, {useCallback, useEffect} from "react";
 import "./App.css";
 import {Todolist} from "./components/Todolist";
 import {useDispatch, useSelector} from "react-redux";
-import {RootStateType} from "./state/store";
+import {AppDispatchType, RootStateType} from "./state/store";
 import {FilterType, TodolistType} from "./type/type";
 import {AddItemForm} from "./components/AddItemForm";
-import {addTodolistAC, changeFilterAC, getTodolistAC} from "./state/reducers/todolist-reducer";
-import {todolistsApi} from "./api/todolistsApi";
-
-interface userType {
-    id: number
-    userName: string
-}
+import {addTodolistAC, changeFilterAC, getTodosTC} from "./state/reducers/todolist-reducer";
 
 function App() {
-    const dispatch = useDispatch()
+
+    const dispatch = useDispatch<AppDispatchType>()
     const todolistsState = useSelector<RootStateType, TodolistType[]>(state => state.todolists)
 
     useEffect(() => {
-        todolistsApi.getTodolists()
-            .then(response => {
-                dispatch(getTodolistAC(response.data))
-            })
+        dispatch(getTodosTC())
     }, [])
 
     const addTodolist = useCallback((title: string) => {
