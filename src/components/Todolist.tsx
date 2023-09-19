@@ -2,9 +2,9 @@ import React, {ChangeEvent, useCallback} from "react";
 import {AllTasksType, FilterType} from "../type/type";
 import {useDispatch, useSelector} from "react-redux";
 import {RootStateType} from "../state/store";
-import {addTaskAC, changeStatusTaskAC, removeTaskAC} from "../state/reducers/tasksReducer";
+import {addTaskAC, changeStatusTaskAC, removeTaskAC} from "../state/reducers/tasks-reducer";
 import {AddItemForm} from "./AddItemForm";
-import {removeTodolistAC} from "../state/reducers/todolistReducer";
+import {removeTodolistAC} from "../state/reducers/todolist-reducer";
 
 type TodolistPropsType = {
     todolistID: string

@@ -1,9 +1,11 @@
-export type FilterType = "all" | "active" | "completed"
+export type FilterType = "all" | "active" | "completed" | undefined
 
 export type TodolistType = {
     id: string
     title: string
-    filter: FilterType
+    addedDate: string
+    order: number
+    filter?: FilterType
 }
 
 export type TaskType = {

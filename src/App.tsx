@@ -1,12 +1,12 @@
-import React, {useCallback} from "react";
+import React, {useCallback, useEffect} from "react";
 import "./App.css";
 import {Todolist} from "./components/Todolist";
 import {useDispatch, useSelector} from "react-redux";
 import {RootStateType} from "./state/store";
 import {FilterType, TodolistType} from "./type/type";
 import {AddItemForm} from "./components/AddItemForm";
-import {addTodolistAC, changeFilterAC} from "./state/reducers/todolistReducer";
-import axios from "axios";
+import {addTodolistAC, changeFilterAC, getTodolistAC} from "./state/reducers/todolist-reducer";
+import {todolistsApi} from "./api/todolistsApi";
 
 interface userType {
     id: number
@@ -17,6 +17,13 @@ function App() {
     const dispatch = useDispatch()
     const todolistsState = useSelector<RootStateType, TodolistType[]>(state => state.todolists)
 
+    useEffect(() => {
+        todolistsApi.getTodolists()
+            .then(response => {
+                dispatch(getTodolistAC(response.data))
+            })
+    }, [])
+
     const addTodolist = useCallback((title: string) => {
         dispatch(addTodolistAC(title))
     }, [])
@@ -25,7 +32,7 @@ function App() {
     }, [])
     return (
         <div className="App">
-            <AddItemForm callback={addTodolist} />
+            <AddItemForm callback={addTodolist}/>
             {
                 todolistsState.map(tl => {
 
