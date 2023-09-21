@@ -4,18 +4,7 @@ import {Dispatch} from "redux";
 import {todolistsApi} from "../../api/todolistsApi";
 import {RootStateType} from "../store";
 
-const initState: AllTasksType = {
-    // [todolistID_1]: [
-    //     {id: v1(), title: "HTML", isDone: true},
-    //     {id: v1(), title: "CSS", isDone: true},
-    //     {id: v1(), title: "JS", isDone: false},
-    // ],
-    // [todolistID_2]: [
-    //     {id: v1(), title: "Milk", isDone: true},
-    //     {id: v1(), title: "Meat", isDone: false},
-    //     {id: v1(), title: "Tea", isDone: false},
-    // ]
-}
+const initState: AllTasksType = {}
 
 type AddTaskACType = ReturnType<typeof addTaskAC>
 type RemoveTaskACType = ReturnType<typeof removeTaskAC>
@@ -62,17 +51,6 @@ export const tasksReducer = (state = initState, action: ActionType): AllTasksTyp
             }
         }
         case "ADD-TASK": {
-            // const newTask: TaskType = {
-            //     id: action.payload.task.id,
-            //     title: action.payload.task.title,
-            //     status: TaskStatuses.New,
-            //     deadline: action.payload.task.deadline,
-            //     startDate: action.payload.task.startDate,
-            //     addedDate: action.payload.task.addedDate,
-            //     description: action.payload.task.description,
-            //     order: action.payload.task.order,
-            //     priority: action.payload.task.priority
-            // }
             return {
                 ...state,
                 [action.payload.todolistID]: [action.payload.task, ...state[action.payload.todolistID]]
@@ -152,8 +130,12 @@ export const getTasksTC = (todolistID: string) => (dispatch: Dispatch) => {
         })
 }
 
-export const changeTaskStatusTC = (todolistID: string, taskID: string, status: TaskStatuses) =>
-    (dispatch: Dispatch, getState: () => RootStateType) => {
+type GetStoreStateType = () => RootStateType
+
+export const changeTaskStatusTC = (todolistID: string, taskID: string, status: TaskStatuses) => {
+    // getState - получаем весь state из Store
+    return (dispatch: Dispatch, getState: GetStoreStateType) => {
+
         const task = getState().tasks[todolistID].find(t => t.id === taskID)
 
         if (task) {
@@ -167,10 +149,14 @@ export const changeTaskStatusTC = (todolistID: string, taskID: string, status: T
             }
             todolistsApi.updateTask(todolistID, taskID, model)
                 .then(response => {
-                    dispatch(changeStatusTaskAC(todolistID, taskID, status))
+                    dispatch(changeStatusTaskAC(todolistID, taskID, response.data.data.item.status))
+                })
+                .catch(error => {
+                    throw Error("Not internet", error)
                 })
         }
     }
+}
 
 export const deleteTaskTC = (todolistID: string, taskID: string) => (dispatch: Dispatch) => {
     todolistsApi.deleteTask(todolistID, taskID)

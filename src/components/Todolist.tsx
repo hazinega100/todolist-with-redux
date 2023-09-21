@@ -60,9 +60,8 @@ export const Todolist: React.FC<TodolistPropsType> = React.memo((
     // changeStatusTask
     const changeStatusTask = useCallback((e: ChangeEvent<HTMLInputElement>, taskID: string) => {
         // let newIsDoneValue = e.currentTarget.checked
-        debugger
-        changeTaskStatusTC(todolistID, taskID, e.currentTarget.checked ? TaskStatuses.Completed : TaskStatuses.New)
-    }, [todolistID])
+        dispatch(changeTaskStatusTC(todolistID, taskID, e.currentTarget.checked ? TaskStatuses.Completed : TaskStatuses.New))
+    }, [])
 
     // changeTodolistFilter
     const changeTodolistFilterAll = useCallback(() => changeFilter("all"), [])
@@ -81,7 +80,6 @@ export const Todolist: React.FC<TodolistPropsType> = React.memo((
             <ul>
                 {
                     tasksForTodolist.map(task => {
-
                         return (
                             <li key={task.id}>
                                 <input type="checkbox"
