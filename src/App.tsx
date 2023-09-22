@@ -3,21 +3,21 @@ import "./App.css";
 import {Todolist} from "./components/Todolist";
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatchType, RootStateType} from "./state/store";
-import {FilterType, TodolistType} from "./type/type";
+import {FilterType, TodolistDomainType} from "./type/type";
 import {AddItemForm} from "./components/AddItemForm";
-import {addTodolistAC, changeFilterAC, getTodosTC} from "./state/reducers/todolist-reducer";
+import {addTodolistTC, changeFilterAC, getTodosTC} from "./state/reducers/todolist-reducer";
 
 function App() {
 
     const dispatch = useDispatch<AppDispatchType>()
-    const todolistsState = useSelector<RootStateType, TodolistType[]>(state => state.todolists)
+    const todolistsState = useSelector<RootStateType, TodolistDomainType[]>(state => state.todolists)
 
     useEffect(() => {
         dispatch(getTodosTC())
     }, [])
 
     const addTodolist = useCallback((title: string) => {
-        dispatch(addTodolistAC(title))
+        dispatch(addTodolistTC(title))
     }, [])
     const changeFilter = useCallback((todolistID: string, value: FilterType) => {
         dispatch(changeFilterAC(todolistID, value))

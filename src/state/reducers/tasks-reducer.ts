@@ -1,5 +1,12 @@
-import {AllTasksType, TaskStatuses, TaskType, UpdateTaskModelType} from "../../type/type";
-import {GetTodolistACType, newTodolistID} from "./todolist-reducer";
+import {
+    AllTasksType,
+    ResponseTimeType,
+    TaskPriorities,
+    TaskStatuses,
+    TaskType,
+    UpdateTaskModelType
+} from "../../type/type";
+import {AddTodolistACType, GetTodolistACType, RemoveTodolistACType} from "./todolist-reducer";
 import {Dispatch} from "redux";
 import {todolistsApi} from "../../api/todolistsApi";
 import {RootStateType} from "../store";
@@ -8,21 +15,14 @@ const initState: AllTasksType = {}
 
 type AddTaskACType = ReturnType<typeof addTaskAC>
 type RemoveTaskACType = ReturnType<typeof removeTaskAC>
-type ChangeTaskStatusType = ReturnType<typeof changeStatusTaskAC>
+type ChangeTaskStatusType = ReturnType<typeof updateTaskAC>
 type GetTaskACType = ReturnType<typeof getTaskAC>
-type AddTodolistType = {
-    type: "ADD-TODOLIST"
-}
-type RemoveTodolistType = {
-    type: "REMOVE-TODOLIST"
-    todolistID: string
-}
 
 type ActionType = AddTaskACType
+    | AddTodolistACType
     | RemoveTaskACType
-    | AddTodolistType
     | ChangeTaskStatusType
-    | RemoveTodolistType
+    | RemoveTodolistACType
     | GetTodolistACType
     | GetTaskACType
 
@@ -37,12 +37,13 @@ export const tasksReducer = (state = initState, action: ActionType): AllTasksTyp
         case "ADD-TODOLIST": {
             return {
                 ...state,
-                [newTodolistID]: []
+                [action.todolist.id]: []
             }
         }
         case "REMOVE-TODOLIST": {
-            // Нужно доделать
-            return state
+            let copyState = {...state}
+            delete copyState[action.todolistID]
+            return copyState
         }
         case "GET-TASK": {
             return {
@@ -51,9 +52,10 @@ export const tasksReducer = (state = initState, action: ActionType): AllTasksTyp
             }
         }
         case "ADD-TASK": {
+            const newTask = action.payload.task
             return {
                 ...state,
-                [action.payload.todolistID]: [action.payload.task, ...state[action.payload.todolistID]]
+                [action.payload.todolistID]: [newTask, ...state[action.payload.todolistID]]
             }
         }
         case "REMOVE-TASK": {
@@ -63,11 +65,11 @@ export const tasksReducer = (state = initState, action: ActionType): AllTasksTyp
                     .filter(t => t.id !== action.payload.taskID)
             }
         }
-        case "CHANGE-TASK-STATUS": {
+        case "UPDATE-TASK": {
             return {
                 ...state,
                 [action.payload.todolistID]: state[action.payload.todolistID]
-                    .map(t => t.id === action.payload.taskID ? {...t, status: action.payload.status} : t)
+                    .map(t => t.id === action.payload.taskID ? {...t, ...action.payload.modal} : t)
             }
         }
         default: {
@@ -104,13 +106,13 @@ export const removeTaskAC = (todolistID: string, taskID: string) => {
     } as const
 }
 
-export const changeStatusTaskAC = (todolistID: string, taskID: string, status: TaskStatuses) => {
+export const updateTaskAC = (todolistID: string, taskID: string, modal: UpdateTaskModelType) => {
     return {
-        type: "CHANGE-TASK-STATUS",
+        type: "UPDATE-TASK",
         payload: {
             todolistID,
             taskID,
-            status
+            modal
         }
     } as const
 }
@@ -132,7 +134,16 @@ export const getTasksTC = (todolistID: string) => (dispatch: Dispatch) => {
 
 type GetStoreStateType = () => RootStateType
 
-export const changeTaskStatusTC = (todolistID: string, taskID: string, status: TaskStatuses) => {
+type UpdateDomainModelType = {
+    title?: string
+    description?: string
+    status?: TaskStatuses
+    priority?: TaskPriorities
+    startDate?: string
+    deadline?: string
+}
+
+export const updateTaskTC = (todolistID: string, taskID: string, update: UpdateDomainModelType) => {
     // getState - получаем весь state из Store
     return (dispatch: Dispatch, getState: GetStoreStateType) => {
 
@@ -141,15 +152,16 @@ export const changeTaskStatusTC = (todolistID: string, taskID: string, status: T
         if (task) {
             const model: UpdateTaskModelType = {
                 title: task.title,
-                status,
+                status: task.status,
                 deadline: task.deadline,
                 description: task.description,
                 priority: task.priority,
-                startDate: task.startDate
+                startDate: task.startDate,
+                ...update
             }
             todolistsApi.updateTask(todolistID, taskID, model)
                 .then(response => {
-                    dispatch(changeStatusTaskAC(todolistID, taskID, response.data.data.item.status))
+                    dispatch(updateTaskAC(todolistID, taskID, model))
                 })
                 .catch(error => {
                     throw Error("Not internet", error)
@@ -158,9 +170,11 @@ export const changeTaskStatusTC = (todolistID: string, taskID: string, status: T
     }
 }
 
-export const deleteTaskTC = (todolistID: string, taskID: string) => (dispatch: Dispatch) => {
+export const deleteTaskTC = (todolistID: string, taskID: string, setDisabled: ResponseTimeType) => (dispatch: Dispatch) => {
+    setDisabled(true)
     todolistsApi.deleteTask(todolistID, taskID)
         .then(response => {
+            setDisabled(false)
             dispatch(removeTaskAC(todolistID, taskID))
         })
 }

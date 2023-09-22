@@ -1,5 +1,5 @@
 import axios from "axios";
-import {TaskType, TodolistType, UpdateTaskModelType} from "../type/type";
+import {TaskType, TodolistDomainType, UpdateTaskModelType} from "../type/type";
 
 const settings = {
     withCredentials: true,
@@ -13,10 +13,10 @@ const instance = axios.create({
 
 export const todolistsApi = {
     createTodolist(title: string) {
-        return instance.post('todo-lists', {title: title})
+        return instance.post<ResponseType<{ item: TodolistDomainType }>>('todo-lists', {title: title})
     },
     getTodolists() {
-        return instance.get<TodolistType[]>('todo-lists')
+        return instance.get<TodolistDomainType[]>('todo-lists')
     },
     updateTodolist(id: string, title: string) {
         return instance.put(`todo-lists/${id}`, {title: title})

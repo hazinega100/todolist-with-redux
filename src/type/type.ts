@@ -1,12 +1,34 @@
-export type FilterType = "all" | "active" | "completed" | undefined
+export type FilterType = "all" | "active" | "completed"
 
 export type TodolistType = {
     id: string
     title: string
     addedDate: string
     order: number
-    filter?: FilterType
 }
+
+export type TodolistDomainType = TodolistType & {
+    filter: FilterType
+}
+
+export type TaskType = {
+    description: string
+    title: string
+    status: TaskStatuses
+    priority: TaskPriorities
+    startDate: string
+    deadline: string
+    id: string
+    todoListId: string
+    order: number
+    addedDate: string
+}
+
+export type AllTasksType = {
+    [key: string]: TaskType[]
+}
+
+export type ResponseTimeType = (res: boolean) => void
 
 export enum TaskStatuses {
     New = 0,
@@ -30,21 +52,4 @@ export type UpdateTaskModelType = {
     priority: TaskPriorities
     startDate: string
     deadline: string
-}
-
-export type TaskType = {
-    description: string
-    title: string
-    status: TaskStatuses
-    priority: TaskPriorities
-    startDate: string
-    deadline: string
-    id: string
-    todoListId?: string
-    order: number
-    addedDate: string
-}
-
-export type AllTasksType = {
-    [key: string]: TaskType[]
 }
