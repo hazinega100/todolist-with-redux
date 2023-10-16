@@ -1,18 +1,4 @@
-.App {
-  padding: 30px;
+.app_bar {
   display: flex;
-}
-
-.App > div {
-  margin-right: 50px;
-}
-
-.error {
-  color: red;
-}
-
-.error_border {
-  border: 2px solid red;
-  border-radius: 3px;
-  color: red;
+  justify-content: space-between;
 }

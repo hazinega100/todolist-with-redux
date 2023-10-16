@@ -6,6 +6,16 @@ import {AppDispatchType, RootStateType} from "./state/store";
 import {FilterType, TodolistDomainType} from "./type/type";
 import {AddItemForm} from "./components/AddItemForm";
 import {addTodolistTC, changeFilterAC, getTodosTC} from "./state/reducers/todolist-reducer";
+import AppBar from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import MenuIcon from '@mui/icons-material/Menu';
+import Paper from '@mui/material/Paper';
+import Container from '@mui/material/Container';
+import Grid from "@mui/material/Grid";
 
 function App() {
 
@@ -24,18 +34,41 @@ function App() {
     }, [])
     return (
         <div className="App">
-            <AddItemForm callback={addTodolist}/>
-            {
-                todolistsState.map(tl => {
+            <AppBar position="static">
+                <Toolbar className="app_bar">
+                    <IconButton edge="start" color="inherit" aria-label="menu">
+                        <MenuIcon/>
+                    </IconButton>
+                    <Typography variant="h6">
+                        TodoList
+                    </Typography>
+                    <Button color="inherit">Login</Button>
+                </Toolbar>
+            </AppBar>
+            <Container fixed>
+                <Grid container style={{padding: '20px'}}>
+                    <AddItemForm callback={addTodolist}/>
+                </Grid>
+                <Grid container spacing={3}>
+                    {
+                        todolistsState.map(tl => {
 
-                    return <Todolist key={tl.id}
-                                     todolistID={tl.id}
-                                     title={tl.title}
-                                     changeFilter={(value: FilterType) => changeFilter(tl.id, value)}
-                                     filter={tl.filter}
-                    />
-                })
-            }
+                            return (
+                                <Grid item key={tl.id}>
+                                    <Paper style={{padding: '10px'}}>
+                                        <Todolist key={tl.id}
+                                                  todolistID={tl.id}
+                                                  title={tl.title}
+                                                  changeFilter={(value: FilterType) => changeFilter(tl.id, value)}
+                                                  filter={tl.filter}
+                                        />
+                                    </Paper>
+                                </Grid>
+                            )
+                        })
+                    }
+                </Grid>
+            </Container>
         </div>
     );
 }

@@ -2,14 +2,13 @@ import React, {ChangeEvent, useCallback, useEffect, useState} from "react";
 import {AllTasksType, FilterType, TaskStatuses} from "../type/type";
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatchType, RootStateType} from "../state/store";
-import {
-    addTaskTC,
-    updateTaskTC,
-    deleteTaskTC,
-    getTasksTC
-} from "../state/reducers/tasks-reducer";
+import {addTaskTC, deleteTaskTC, getTasksTC, updateTaskTC} from "../state/reducers/tasks-reducer";
 import {AddItemForm} from "./AddItemForm";
 import {removeTodolistTC} from "../state/reducers/todolist-reducer";
+import Button from "@mui/material/Button";
+import Stack from "@mui/material/Stack";
+import {DeleteButton} from "./Buttons/DeleteButton";
+import Checkbox from '@mui/material/Checkbox';
 
 type TodolistPropsType = {
     todolistID: string
@@ -71,12 +70,10 @@ export const Todolist: React.FC<TodolistPropsType> = React.memo((
     const changeTodolistFilterCompleted = useCallback(() => changeFilter("completed"), [])
 
     return (
-        <div>
+        <div className="todolist_wrapper">
             <h3>
                 {title}
-                <button onClick={removeTodolist}
-                        disabled={disabledTl}>X
-                </button>
+                <DeleteButton disabled={disabledTl} remove={removeTodolist}/>
             </h3>
             <div>
                 <AddItemForm callback={addTask}/>
@@ -86,14 +83,12 @@ export const Todolist: React.FC<TodolistPropsType> = React.memo((
                     tasksForTodolist.map(task => {
                         return (
                             <li key={task.id}>
-                                <input type="checkbox"
-                                       checked={task.status === TaskStatuses.Completed}
-                                       onChange={(e) => changeStatusTask(e, task.id)}
+                                <Checkbox size="small"
+                                          checked={task.status === TaskStatuses.Completed}
+                                          onChange={(e) => changeStatusTask(e, task.id)}
                                 />
                                 <span>{task.title}</span>
-                                <button onClick={() => onClickRemoveTask(task.id)}
-                                        disabled={disabledTask}>X
-                                </button>
+                                <DeleteButton remove={() => onClickRemoveTask(task.id)} disabled={disabledTask}/>
                                 <div>{task.addedDate}</div>
                             </li>
                         )
@@ -101,9 +96,17 @@ export const Todolist: React.FC<TodolistPropsType> = React.memo((
                 }
             </ul>
             <div>
-                <button onClick={changeTodolistFilterAll}>All</button>
-                <button onClick={changeTodolistFilterActive}>Active</button>
-                <button onClick={changeTodolistFilterCompleted}>Completed</button>
+                <Stack direction="row" spacing={1}>
+                    <Button size={"small"} color="secondary"
+                            variant={filter === 'all' ? "contained" : 'outlined'}
+                            onClick={changeTodolistFilterAll}>All</Button>
+                    <Button size={"small"} color="warning"
+                            variant={filter === 'active' ? "contained" : 'outlined'}
+                            onClick={changeTodolistFilterActive}>Active</Button>
+                    <Button size={"small"} color="success"
+                            variant={filter === 'completed' ? "contained" : 'outlined'}
+                            onClick={changeTodolistFilterCompleted}>Completed</Button>
+                </Stack>
             </div>
         </div>
     );

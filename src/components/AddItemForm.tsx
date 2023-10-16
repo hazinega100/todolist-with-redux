@@ -1,4 +1,7 @@
 import React, {ChangeEvent, KeyboardEvent, useState} from 'react';
+import AddIcon from '@mui/icons-material/Add';
+import IconButton from "@mui/material/IconButton";
+import TextField from '@mui/material/TextField';
 
 type AddItemFormPropsType = {
     callback: (title: string) => void
@@ -33,14 +36,18 @@ export const AddItemForm: React.FC<AddItemFormPropsType> = React.memo(
         }
         return (
             <div>
-                <input className={error ? "error_border" : ""}
-                       value={title}
-                       onChange={onChangeHandler}
-                       onKeyPress={pressedEnter}
-                       style={{borderColor: color, color: color, outline: "none"}}
+                <TextField id="outlined-basic"
+                           size={"small"}
+                           value={title}
+                           onChange={onChangeHandler}
+                           onKeyPress={pressedEnter}
+                           label="Title"
+                           variant="outlined"
+                           error={error}
                 />
-                <button onClick={onClickAddItem}>+</button>
-                {error && <div className="error">Title is required</div>}
+                <IconButton onClick={onClickAddItem} color={"success"}>
+                    <AddIcon/>
+                </IconButton>
             </div>
         );
     }
