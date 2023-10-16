@@ -2,18 +2,8 @@ import {FilterType, ResponseTimeType, TodolistDomainType} from "../../type/type"
 import {Dispatch} from "redux";
 import {todolistsApi} from "../../api/todolistsApi";
 
-// STATE
+// state
 const initState: TodolistDomainType[] = []
-
-export type GetTodolistACType = ReturnType<typeof getTodolistAC>
-export type AddTodolistACType = ReturnType<typeof addTodolistAC>
-export type RemoveTodolistACType = ReturnType<typeof removeTodolistAC>
-type ChangeTodolistFilterType = ReturnType<typeof changeFilterAC>
-
-type ActionType = AddTodolistACType
-    | RemoveTodolistACType
-    | ChangeTodolistFilterType
-    | GetTodolistACType
 
 export const todolistReducer = (state = initState, action: ActionType): TodolistDomainType[] => {
     switch (action.type) {
@@ -22,7 +12,7 @@ export const todolistReducer = (state = initState, action: ActionType): Todolist
         }
         case "ADD-TODOLIST": {
             return [
-                action.todolist,
+                {...action.todolist, filter: "all"},
                 ...state
             ]
         }
@@ -38,6 +28,7 @@ export const todolistReducer = (state = initState, action: ActionType): Todolist
     }
 }
 
+// action
 const getTodolistAC = (todolists: TodolistDomainType[]) => {
     return {
         type: "GET-TODOLIST",
@@ -69,7 +60,7 @@ export const changeFilterAC = (todolistID: string, value: FilterType) => {
     } as const
 }
 
-
+// thank
 export const getTodosTC = () => (dispatch: Dispatch) => {
     todolistsApi.getTodolists()
         .then(response => {
@@ -94,3 +85,15 @@ export const removeTodolistTC = (todolistID: string, setDisabled: ResponseTimeTy
                 dispatch(removeTodolistAC(todolistID))
             })
 }
+
+// types
+export type GetTodolistACType = ReturnType<typeof getTodolistAC>
+export type AddTodolistACType = ReturnType<typeof addTodolistAC>
+export type RemoveTodolistACType = ReturnType<typeof removeTodolistAC>
+type ChangeTodolistFilterType = ReturnType<typeof changeFilterAC>
+
+type ActionType =
+    | AddTodolistACType
+    | RemoveTodolistACType
+    | ChangeTodolistFilterType
+    | GetTodolistACType

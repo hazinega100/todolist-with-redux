@@ -11,6 +11,7 @@ const instance = axios.create({
     ...settings
 })
 
+// api
 export const todolistsApi = {
     createTodolist(title: string) {
         return instance.post<ResponseType<{ item: TodolistDomainType }>>('todo-lists', {title: title})
@@ -38,12 +39,12 @@ export const todolistsApi = {
     }
 }
 
+// types
 export type GetTasksResponse = {
     error: string | null
     totalCount: number
     items: TaskType[]
 }
-
 export type ResponseType<T = {}> = {
     resultCode: number
     messages: string[],
