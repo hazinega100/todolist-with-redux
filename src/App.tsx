@@ -7,7 +7,6 @@ import {FilterType, TodolistDomainType} from "./type/type";
 import {AddItemForm} from "./components/AddItemForm";
 import {addTodolistTC, changeFilterAC, getTodosTC} from "./state/reducers/todolist-reducer";
 import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
@@ -16,14 +15,19 @@ import MenuIcon from '@mui/icons-material/Menu';
 import Paper from '@mui/material/Paper';
 import Container from '@mui/material/Container';
 import Grid from "@mui/material/Grid";
+import LinearProgress from "@mui/material/LinearProgress";
+import {ErrorSnackbar} from "./components/ErrorSnackbar";
+import {setStatusTC, StatusType} from "./state/reducers/app-reducer";
 
 function App() {
 
     const dispatch = useDispatch<AppDispatchType>()
     const todolistsState = useSelector<RootStateType, TodolistDomainType[]>(state => state.todolists)
+    const status = useSelector<RootStateType, StatusType>(state => state.app.status)
 
     useEffect(() => {
         dispatch(getTodosTC())
+        dispatch(setStatusTC())
     }, [])
 
     const addTodolist = useCallback((title: string) => {
@@ -45,6 +49,7 @@ function App() {
                     <Button color="inherit">Login</Button>
                 </Toolbar>
             </AppBar>
+            {status === 'loading' ? <LinearProgress /> : ''}
             <Container fixed>
                 <Grid container style={{padding: '20px'}}>
                     <AddItemForm callback={addTodolist}/>
@@ -52,7 +57,6 @@ function App() {
                 <Grid container spacing={3}>
                     {
                         todolistsState.map(tl => {
-
                             return (
                                 <Grid item key={tl.id}>
                                     <Paper style={{padding: '10px'}}>
@@ -68,6 +72,7 @@ function App() {
                         })
                     }
                 </Grid>
+                <ErrorSnackbar />
             </Container>
         </div>
     );
