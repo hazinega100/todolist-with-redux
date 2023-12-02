@@ -20,7 +20,7 @@ export const todolistsApi = {
         return instance.get<TodolistDomainType[]>('todo-lists')
     },
     updateTodolist(id: string, title: string) {
-        return instance.put(`todo-lists/${id}`, {title: title})
+        return instance.put<ResponseType>(`todo-lists/${id}`, {title: title})
     },
     deleteTodolist(id: string) {
         return instance.delete(`todo-lists/${id}`)
