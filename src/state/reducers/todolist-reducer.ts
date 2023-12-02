@@ -1,6 +1,7 @@
 import {FilterType, ResponseTimeType, TodolistDomainType} from "../../type/type";
 import {Dispatch} from "redux";
 import {todolistsApi} from "../../api/todolistsApi";
+import {setStatus} from "./app-reducer";
 
 // state
 const initState: TodolistDomainType[] = []
@@ -60,20 +61,25 @@ export const changeFilterAC = (todolistID: string, value: FilterType) => {
     } as const
 }
 
-// thank
+// thunk
 export const getTodosTC = () => (dispatch: Dispatch) => {
+    dispatch(setStatus('loading'))
     todolistsApi.getTodolists()
         .then(response => {
             dispatch(getTodolistAC(response.data))
+            dispatch(setStatus('idle'))
         })
 }
 
 export const addTodolistTC = (title: string) => {
-    return (dispatch: Dispatch) =>
+    return (dispatch: Dispatch) => {
+        dispatch(setStatus('loading'))
         todolistsApi.createTodolist(title)
             .then(res => {
                 dispatch(addTodolistAC(res.data.data.item))
+                dispatch(setStatus('idle'))
             })
+    }
 }
 
 export const removeTodolistTC = (todolistID: string, setDisabled: ResponseTimeType) => {

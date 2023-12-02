@@ -2,34 +2,36 @@ import React, {ChangeEvent, KeyboardEvent, useState} from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import IconButton from "@mui/material/IconButton";
 import TextField from '@mui/material/TextField';
+import {setError} from "../state/reducers/app-reducer";
+import {useDispatch} from "react-redux";
 
 type AddItemFormPropsType = {
     callback: (title: string) => void
-    color?: string
 }
 
 export const AddItemForm: React.FC<AddItemFormPropsType> = React.memo(
-    ({callback, color}) => {
+    ({callback}) => {
         console.log("AddItemForm rendered")
+
+        const dispatch = useDispatch()
         const [title, setTitle] = useState("")
-        const [error, setError] = useState(false)
+        const [errorLocal, setErrorLocal] = useState(false)
 
         const onClickAddItem = () => {
             if (title.trim() !== "") {
                 callback(title.trim())
                 setTitle("")
             } else {
-                setError(true)
+                dispatch(setError('title empty'))
+                setErrorLocal(true)
             }
         }
         const onChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
             setTitle(e.currentTarget.value)
+            setErrorLocal(false)
         }
 
         const pressedEnter = (e: KeyboardEvent<HTMLInputElement>) => {
-            if (error) {
-                setError(false)
-            }
             if (e.key === 'Enter') {
                 onClickAddItem()
             }
@@ -43,7 +45,7 @@ export const AddItemForm: React.FC<AddItemFormPropsType> = React.memo(
                            onKeyPress={pressedEnter}
                            label="Title"
                            variant="outlined"
-                           error={error}
+                           error={errorLocal}
                 />
                 <IconButton onClick={onClickAddItem} color={"success"}>
                     <AddIcon/>

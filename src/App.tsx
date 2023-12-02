@@ -49,7 +49,7 @@ function App() {
                     <Button color="inherit">Login</Button>
                 </Toolbar>
             </AppBar>
-            {status === 'loading' ? <LinearProgress /> : ''}
+            {status === 'loading' && <LinearProgress />}
             <Container fixed>
                 <Grid container style={{padding: '20px'}}>
                     <AddItemForm callback={addTodolist}/>
