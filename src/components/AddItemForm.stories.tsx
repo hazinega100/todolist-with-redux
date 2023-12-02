@@ -9,8 +9,7 @@ const meta: Meta<typeof AddItemForm> = {
     },
     tags: ['autodocs'],
     argTypes: {
-        callback: (title: string) => console.log(title),
-        color: { control: 'color' },
+        callback: (title: string) => console.log(title)
     },
 };
 
@@ -22,7 +21,6 @@ export const AddItemFormChangeColor: Story = {
     args: {
         callback(title) {
             console.log(title)
-        },
-        color: "red"
+        }
     },
 };
