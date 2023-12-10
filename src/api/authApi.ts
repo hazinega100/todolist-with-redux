@@ -1,4 +1,5 @@
 import axios from "axios";
+import {ResponseType} from "./todolistsApi";
 
 const settings = {
     withCredentials: true,
@@ -6,18 +7,18 @@ const settings = {
 }
 
 const instance = axios.create({
-    baseURL: 'https://social-network.samuraijs.com/api/1.1/',
+    baseURL: "https://social-network.samuraijs.com/api/1.1/",
     ...settings
 })
 
 export const authApi = {
-    logIn(login: any) {
-        return instance.post('auth/login', {login: login})
+    logIn(email: string, password: string) {
+        return instance.post<ResponseType<{ userId: number }>>("auth/login", {email, password})
     },
     logOut() {
-        return instance.delete('auth/login')
+        return instance.delete("auth/login")
     },
     me() {
-        return instance.get('auth/me')
+        return instance.get("auth/me")
     },
 }

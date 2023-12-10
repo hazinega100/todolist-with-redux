@@ -8,11 +8,13 @@ import Container from "@mui/material/Container";
 import {addTodolistTC, changeFilterAC} from "../state/reducers/todolist-reducer";
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatchType, RootStateType} from "../state/store";
+import {Navigate} from "react-router-dom";
 
 export const Todolists = () => {
     const dispatch = useDispatch<AppDispatchType>()
 
     const todolistsState = useSelector<RootStateType, TodolistDomainType[]>(state => state.todolists)
+    const isLoggedIn = useSelector<RootStateType, boolean>(state => state.auth.isLoggedIn)
 
     const addTodolist = useCallback((title: string) => {
         dispatch(addTodolistTC(title))
@@ -20,6 +22,9 @@ export const Todolists = () => {
     const changeFilter = useCallback((todolistID: string, value: FilterType) => {
         dispatch(changeFilterAC(todolistID, value))
     }, [])
+    if (!isLoggedIn) {
+        return <Navigate to={'/login'} />
+    }
     return (
         <Container fixed>
             <Grid container style={{padding: '20px'}}>
