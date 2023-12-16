@@ -24,6 +24,12 @@ export const setLogin = (login: boolean) => {
         login
     } as const
 }
+export const setMe = (login: boolean) => {
+    return {
+        type: 'AUTH/ME',
+        login
+    } as const
+}
 
 // thank
 export const setIsLoggedInTC = (email: string, password: string) => (dispatch: Dispatch) => {
@@ -40,6 +46,20 @@ export const setIsLoggedInTC = (email: string, password: string) => (dispatch: D
         })
 }
 
+// export const setIsMeTC = () => (dispatch: Dispatch) => {
+//     dispatch(setStatus('loading'))
+//     authApi.me()
+//         .then(res => {
+//             if (res.data.resultCode === 0) {
+//                 dispatch(setStatus('idle'))
+//                 dispatch(setMe(true))
+//             }
+//         })
+//         .catch(error => {
+//             dispatch(setError(error))
+//         })
+// }
+
 // types
 export type InitStateType = {
     isLoggedIn: boolean
@@ -51,5 +71,6 @@ export type LoginType = {
     captcha?: boolean
 }
 
-type ActionType = SetLoginType
+type ActionType = SetLoginType | SetIsMeType
 type SetLoginType = ReturnType<typeof setLogin>
+type SetIsMeType = ReturnType<typeof setMe>

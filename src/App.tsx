@@ -27,8 +27,10 @@ function App() {
         }
         dispatch(getTodosTC())
         dispatch(setStatusTC())
-    }, [])
-
+    }, [isLoggedIn])
+    // useEffect(() => {
+    //     dispatch(setIsMeTC())
+    // })
     return (
         <div className="App">
             <AppBar position="static">
