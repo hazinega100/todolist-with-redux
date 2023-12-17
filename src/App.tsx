@@ -15,6 +15,7 @@ import {setStatusTC, StatusType} from "./state/reducers/app-reducer";
 import {NavLink, Route, Routes} from "react-router-dom";
 import {Login} from "./components/Login/Login";
 import {Todolists} from "./components/Todolists";
+import {setIsMeTC, setLogOutTC} from "./state/reducers/auth-reducer";
 
 function App() {
     const dispatch = useDispatch<AppDispatchType>()
@@ -28,9 +29,12 @@ function App() {
         dispatch(getTodosTC())
         dispatch(setStatusTC())
     }, [isLoggedIn])
-    // useEffect(() => {
-    //     dispatch(setIsMeTC())
-    // })
+    useEffect(() => {
+        dispatch(setIsMeTC())
+    }, [])
+    const onLogOutHandler = () => {
+        dispatch(setLogOutTC())
+    }
     return (
         <div className="App">
             <AppBar position="static">
@@ -42,7 +46,12 @@ function App() {
                         TodoList
                     </Typography>
 
-                    <NavLink style={{color: "white"}} to={'/login'}><Button color="inherit">Login</Button></NavLink>
+                    {isLoggedIn
+                        ?
+                        <Button onClick={onLogOutHandler} color="inherit">Logout</Button>
+                        :
+                        <NavLink style={{color: "white"}} to={'/login'}><Button color="inherit">Login</Button></NavLink>
+                    }
                 </Toolbar>
             </AppBar>
             {status === 'loading' && <LinearProgress />}
