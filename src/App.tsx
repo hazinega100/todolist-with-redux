@@ -9,18 +9,21 @@ import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
+import CircularProgress from "@mui/material/CircularProgress";
+import Box from "@mui/material/Box";
 import LinearProgress from "@mui/material/LinearProgress";
 import {ErrorSnackbar} from "./components/ErrorSnackbar";
-import {setStatusTC, StatusType} from "./state/reducers/app-reducer";
+import {initializeAppTC, setStatusTC, StatusType} from "./state/reducers/app-reducer";
 import {NavLink, Route, Routes} from "react-router-dom";
 import {Login} from "./components/Login/Login";
 import {Todolists} from "./components/Todolists";
-import {setIsMeTC, setLogOutTC} from "./state/reducers/auth-reducer";
+import {setLogOutTC} from "./state/reducers/auth-reducer";
 
 function App() {
     const dispatch = useDispatch<AppDispatchType>()
     const status = useSelector<RootStateType, StatusType>(state => state.app.status)
     const isLoggedIn = useSelector<RootStateType, boolean>(state => state.auth.isLoggedIn)
+    const isInitialized = useSelector<RootStateType, boolean>(state => state.app.initialized)
 
     useEffect(() => {
         if (!isLoggedIn) {
@@ -30,10 +33,17 @@ function App() {
         dispatch(setStatusTC())
     }, [isLoggedIn])
     useEffect(() => {
-        dispatch(setIsMeTC())
+        dispatch(initializeAppTC())
     }, [])
     const onLogOutHandler = () => {
         dispatch(setLogOutTC())
+    }
+    if (!isInitialized) {
+        return (
+            <Box sx={{display: 'flex', justifyContent: "center", alignItems: "center", height: "100vh"}}>
+                <CircularProgress/>
+            </Box>
+        )
     }
     return (
         <div className="App">
@@ -54,12 +64,12 @@ function App() {
                     }
                 </Toolbar>
             </AppBar>
-            {status === 'loading' && <LinearProgress />}
+            {status === 'loading' && <LinearProgress/>}
             <Routes>
-                <Route path='/' element={<Todolists />} />
-                <Route path='/login' element={<Login />} />
+                <Route path='/' element={<Todolists/>}/>
+                <Route path='/login' element={<Login/>}/>
             </Routes>
-            <ErrorSnackbar />
+            <ErrorSnackbar/>
         </div>
     );
 }

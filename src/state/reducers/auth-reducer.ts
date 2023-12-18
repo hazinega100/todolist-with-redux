@@ -35,7 +35,7 @@ export const setUser = (user: string) => {
     } as const
 }
 
-// thank
+// thunk
 export const setIsLoggedInTC = (values: LoginParamsType) => (dispatch: Dispatch) => {
     dispatch(setStatus('loading'))
     authApi.logIn(values)
@@ -43,24 +43,6 @@ export const setIsLoggedInTC = (values: LoginParamsType) => (dispatch: Dispatch)
             if (res.data.resultCode === 0) {
                 dispatch(setStatus('idle'))
                 dispatch(setLogin(true))
-            }
-        })
-        .catch(error => {
-            dispatch(setError(error))
-        })
-}
-
-export const setIsMeTC = () => (dispatch: Dispatch) => {
-    dispatch(setStatus('loading'))
-    authApi.me()
-        .then(res => {
-            if (res.data.resultCode === 0) {
-                dispatch(setStatus('idle'))
-                dispatch(setLogin(true))
-                dispatch(setUser(res.data.data.login))
-            } else {
-                dispatch(setError(res.data.messages[0]))
-                dispatch(setStatus('failed'))
             }
         })
         .catch(error => {

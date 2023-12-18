@@ -15,8 +15,8 @@ export const Login = () => {
     const isLoggedIn = useSelector<RootStateType, boolean>(state => state.auth.isLoggedIn)
     const formik = useFormik({
         initialValues: {
-            email: 'free@samuraijs.com',
-            password: 'free',
+            email: 'hazinega@gmail.com',
+            password: 'Kentment100',
             rememberMe: false
         },
         onSubmit: (values) => {
