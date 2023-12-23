@@ -28,7 +28,7 @@ export const Todolists = () => {
     return (
         <Container fixed>
             <Grid container style={{padding: '20px'}}>
-                <AddItemForm callback={addTodolist}/>
+                <AddItemForm callback={addTodolist} />
             </Grid>
             <Grid container spacing={3}>
                 {
@@ -41,6 +41,7 @@ export const Todolists = () => {
                                               title={tl.title}
                                               changeFilter={(value: FilterType) => changeFilter(tl.id, value)}
                                               filter={tl.filter}
+                                              entityStatus={tl.entityStatus}
                                     />
                                 </Paper>
                             </Grid>

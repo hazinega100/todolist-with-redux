@@ -2,12 +2,7 @@ import React, {ChangeEvent, useCallback, useEffect, useState} from "react";
 import {AllTasksType, FilterType, TaskStatuses} from "../type/type";
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatchType, RootStateType} from "../state/store";
-import {
-    addTaskTC,
-    deleteTaskTC,
-    getTasksTC,
-    updateTaskTC
-} from "../state/reducers/tasks-reducer";
+import {addTaskTC, deleteTaskTC, getTasksTC, updateTaskTC} from "../state/reducers/tasks-reducer";
 import {AddItemForm} from "./AddItemForm";
 import {changeTitleTodolistTC, removeTodolistTC} from "../state/reducers/todolist-reducer";
 import Button from "@mui/material/Button";
@@ -15,12 +10,14 @@ import Stack from "@mui/material/Stack";
 import {DeleteButton} from "./Buttons/DeleteButton";
 import Checkbox from '@mui/material/Checkbox';
 import {EditableSpan} from "./EditableSpan";
+import {StatusType} from "../state/reducers/app-reducer";
 
 type TodolistPropsType = {
     todolistID: string
     title: string
     changeFilter: (value: FilterType) => void
     filter: FilterType
+    entityStatus: StatusType
 }
 
 export const Todolist: React.FC<TodolistPropsType> = React.memo((
@@ -28,12 +25,12 @@ export const Todolist: React.FC<TodolistPropsType> = React.memo((
         todolistID,
         title,
         changeFilter,
-        filter
+        filter,
+        entityStatus
     }
 ) => {
     console.log("Todolist rendered")
     const tasksState = useSelector<RootStateType, AllTasksType>(state => state.tasks)
-    const [disabledTl, setDisabledTl] = useState(false)
     const [disabledTask, setDisabledTask] = useState(false)
     const dispatch = useDispatch<AppDispatchType>()
     useEffect(() => {
@@ -47,7 +44,7 @@ export const Todolist: React.FC<TodolistPropsType> = React.memo((
 
     // removeTodolist
     const removeTodolist = useCallback(() => {
-        dispatch(removeTodolistTC(todolistID, setDisabledTl))
+        dispatch(removeTodolistTC(todolistID))
     }, [])
 
     const allTasks = tasksState[todolistID]
@@ -89,10 +86,10 @@ export const Todolist: React.FC<TodolistPropsType> = React.memo((
         <div className="todolist_wrapper">
             <h3>
                 <EditableSpan title={title} callBack={changeTitleTodolist} />
-                <DeleteButton disabled={disabledTl} remove={removeTodolist}/>
+                <DeleteButton disabled={entityStatus === 'loading'} remove={removeTodolist}/>
             </h3>
             <div>
-                <AddItemForm callback={addTask}/>
+                <AddItemForm callback={addTask} disabled={entityStatus === 'loading'}/>
             </div>
             <ul>
                 {

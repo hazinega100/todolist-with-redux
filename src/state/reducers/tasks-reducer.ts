@@ -10,7 +10,7 @@ import {AddTodolistACType, GetTodolistACType, RemoveTodolistACType} from "./todo
 import {Dispatch} from "redux";
 import {todolistsApi} from "../../api/todolistsApi";
 import {RootStateType} from "../store";
-import {setError, setStatus} from "./app-reducer";
+import {setError, setAppStatus} from "./app-reducer";
 
 // state
 const initState: AllTasksType = {}
@@ -106,15 +106,16 @@ export const updateTaskAC = (todolistID: string, taskID: string, modal: UpdateTa
 
 // thunks
 export const addTaskTC = (todolistID: string, title: string) => (dispatch: Dispatch) => {
-    dispatch(setStatus('loading'))
+    dispatch(setAppStatus('loading'))
     todolistsApi.createTask(todolistID, title)
         .then(response => {
             if (response.data.resultCode === 0) {
                 dispatch(addTaskAC(todolistID, response.data.data.item))
-                dispatch(setStatus('succeed'))
+                dispatch(setAppStatus('succeed'))
             } else {
                 if (response.data.messages.length) {
                     dispatch(setError(response.data.messages[0]))
+                    dispatch(setAppStatus('failed'))
                 } else {
                     dispatch(setError('some error occurred'))
                 }
@@ -155,12 +156,12 @@ export const updateTaskTC = (todolistID: string, taskID: string, update: UpdateD
 }
 export const deleteTaskTC = (todolistID: string, taskID: string, setDisabled: ResponseTimeType) => (dispatch: Dispatch) => {
     setDisabled(true)
-    dispatch(setStatus('loading'))
+    dispatch(setAppStatus('loading'))
     todolistsApi.deleteTask(todolistID, taskID)
         .then(response => {
             setDisabled(false)
             dispatch(removeTaskAC(todolistID, taskID))
-            dispatch(setStatus('idle'))
+            dispatch(setAppStatus('idle'))
         })
 }
 

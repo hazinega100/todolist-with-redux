@@ -1,5 +1,5 @@
 import {Dispatch} from "redux";
-import {setError, setStatus} from "./app-reducer";
+import {setError, setAppStatus} from "./app-reducer";
 import {authApi, LoginParamsType} from "../../api/authApi";
 
 const initState: InitStateType = {
@@ -35,13 +35,13 @@ export const setUser = (user: string) => {
     } as const
 }
 
-// thunk
+// thunks
 export const setIsLoggedInTC = (values: LoginParamsType) => (dispatch: Dispatch) => {
-    dispatch(setStatus('loading'))
+    dispatch(setAppStatus('loading'))
     authApi.logIn(values)
         .then(res => {
             if (res.data.resultCode === 0) {
-                dispatch(setStatus('idle'))
+                dispatch(setAppStatus('idle'))
                 dispatch(setLogin(true))
             }
         })
@@ -51,11 +51,11 @@ export const setIsLoggedInTC = (values: LoginParamsType) => (dispatch: Dispatch)
 }
 
 export const setLogOutTC = () => (dispatch: Dispatch) => {
-    dispatch(setStatus('loading'))
+    dispatch(setAppStatus('loading'))
     authApi.logOut()
         .then(res => {
             if (res.data.resultCode === 0) {
-                dispatch(setStatus('idle'))
+                dispatch(setAppStatus('idle'))
                 dispatch(setLogin(false))
             }
         })

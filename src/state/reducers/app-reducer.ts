@@ -27,7 +27,7 @@ export const appReducer = (state = initState, action: ActionType): InitStateType
 }
 
 // actions
-export const setStatus = (status: StatusType) => {
+export const setAppStatus = (status: StatusType) => {
     return {
         type: 'APP/SET-STATUS',
         status
@@ -48,12 +48,12 @@ export const setInitialized = (value: boolean) => {
     } as const
 }
 
-// thank
+// thunks
 export const setStatusTC = () => (dispatch: Dispatch) => {
-    dispatch(setStatus('loading'))
+    dispatch(setAppStatus('loading'))
     todolistsApi.getTodolists()
         .then(res => {
-            dispatch(setStatus('idle'))
+            dispatch(setAppStatus('idle'))
         })
         .catch(error => {
             dispatch(setError(error))
@@ -61,17 +61,17 @@ export const setStatusTC = () => (dispatch: Dispatch) => {
 }
 
 export const initializeAppTC = () => (dispatch: Dispatch) => {
-    dispatch(setStatus('loading'))
+    dispatch(setAppStatus('loading'))
     authApi.me()
         .then(res => {
             if (res.data.resultCode === 0) {
-                dispatch(setStatus('idle'))
+                dispatch(setAppStatus('idle'))
                 dispatch(setLogin(true))
                 dispatch(setInitialized(true))
                 dispatch(setUser(res.data.data.login))
             } else {
                 dispatch(setError(res.data.messages[0]))
-                dispatch(setStatus('failed'))
+                dispatch(setAppStatus('failed'))
             }
             dispatch(setInitialized(true))
         })
@@ -92,6 +92,6 @@ export type InitStateType = {
 }
 
 type ActionType = SetStatusType | SetErrorType | SetInitializedType
-type SetStatusType = ReturnType<typeof setStatus>
+type SetStatusType = ReturnType<typeof setAppStatus>
 type SetErrorType = ReturnType<typeof setError>
 type SetInitializedType = ReturnType<typeof setInitialized>

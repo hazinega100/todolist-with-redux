@@ -7,10 +7,11 @@ import {useDispatch} from "react-redux";
 
 type AddItemFormPropsType = {
     callback: (title: string) => void
+    disabled?: boolean
 }
 
 export const AddItemForm: React.FC<AddItemFormPropsType> = React.memo(
-    ({callback}) => {
+    ({callback, disabled}) => {
         console.log("AddItemForm rendered")
 
         const dispatch = useDispatch()
@@ -46,8 +47,9 @@ export const AddItemForm: React.FC<AddItemFormPropsType> = React.memo(
                            label="Title"
                            variant="outlined"
                            error={errorLocal}
+                           disabled={disabled}
                 />
-                <IconButton onClick={onClickAddItem} color={"success"}>
+                <IconButton onClick={onClickAddItem} color={"success"} disabled={disabled}>
                     <AddIcon/>
                 </IconButton>
             </div>

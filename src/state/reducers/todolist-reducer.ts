@@ -1,7 +1,7 @@
-import {FilterType, ResponseTimeType, TodolistDomainType} from "../../type/type";
+import {FilterType, TodolistDomainType} from "../../type/type";
 import {Dispatch} from "redux";
 import {todolistsApi} from "../../api/todolistsApi";
-import {setError, setStatus} from "./app-reducer";
+import {setAppStatus, setError, StatusType} from "./app-reducer";
 
 // state
 const initState: TodolistDomainType[] = []
@@ -13,7 +13,7 @@ export const todolistReducer = (state = initState, action: ActionType): Todolist
         }
         case "ADD-TODOLIST": {
             return [
-                {...action.todolist, filter: "all"},
+                {...action.todolist, filter: "all", entityStatus: "idle"},
                 ...state
             ]
         }
@@ -26,13 +26,16 @@ export const todolistReducer = (state = initState, action: ActionType): Todolist
         case "CHANGE-TITLE-TL": {
             return state.map(tl => tl.id === action.payload.todolistID ? {...tl, title: action.payload.title} : tl)
         }
+        case "CHANGE-ENTITY-STATUS": {
+            return state.map(tl => tl.id === action.payload.todolistID ? {...tl, entityStatus: action.payload.status} : tl)
+        }
         default: {
             return state
         }
     }
 }
 
-// action
+// actions
 const getTodolistAC = (todolists: TodolistDomainType[]) => {
     return {
         type: "GET-TODOLIST",
@@ -74,35 +77,45 @@ export const changeTitleTodolistAC = (todolistID: string, title: string) => {
     } as const
 }
 
-// thunk
+const changeEntityStatusAC = (todolistID: string, status: StatusType) => {
+    return {
+        type: "CHANGE-ENTITY-STATUS",
+        payload: {
+            todolistID,
+            status
+        }
+    } as const
+}
+
+// thunks
 export const getTodosTC = () => (dispatch: Dispatch) => {
-    dispatch(setStatus('loading'))
+    dispatch(setAppStatus('loading'))
     todolistsApi.getTodolists()
         .then(response => {
             dispatch(getTodolistAC(response.data))
-            dispatch(setStatus('idle'))
+            dispatch(setAppStatus('idle'))
         })
 }
 
 export const addTodolistTC = (title: string) => {
     return (dispatch: Dispatch) => {
-        dispatch(setStatus('loading'))
+        dispatch(setAppStatus('loading'))
         todolistsApi.createTodolist(title)
             .then(res => {
                 dispatch(addTodolistAC(res.data.data.item))
-                dispatch(setStatus('idle'))
+                dispatch(setAppStatus('idle'))
             })
     }
 }
 
 export const changeTitleTodolistTC = (todolistID: string, title: string) => {
     return (dispatch: Dispatch) => {
-        dispatch(setStatus('loading'))
+        dispatch(setAppStatus('loading'))
         todolistsApi.updateTodolist(todolistID, title)
             .then(res => {
                 if (res.data.resultCode === 0) {
                     dispatch(changeTitleTodolistAC(todolistID, title))
-                    dispatch(setStatus('idle'))
+                    dispatch(setAppStatus('idle'))
                 } else {
                     dispatch(setError(res.data.messages[0]))
                 }
@@ -110,14 +123,18 @@ export const changeTitleTodolistTC = (todolistID: string, title: string) => {
     }
 }
 
-export const removeTodolistTC = (todolistID: string, setDisabled: ResponseTimeType) => {
-    setDisabled(true)
-    return (dispatch: Dispatch) =>
+export const removeTodolistTC = (todolistID: string) => {
+    return (dispatch: Dispatch) => {
+        dispatch(setAppStatus('loading'))
+        dispatch(changeEntityStatusAC(todolistID, 'loading'))
         todolistsApi.deleteTodolist(todolistID)
             .then(res => {
-                setDisabled(false)
-                dispatch(removeTodolistAC(todolistID))
+                if (res.data.resultCode === 0) {
+                    dispatch(removeTodolistAC(todolistID))
+                    dispatch(setAppStatus('succeed'))
+                }
             })
+    }
 }
 
 // types
@@ -133,3 +150,4 @@ type ActionType =
     | ChangeTodolistFilterType
     | GetTodolistACType
     | ChangeTitleTodolistType
+    | ReturnType<typeof changeEntityStatusAC>

@@ -1,3 +1,5 @@
+import {StatusType} from "../state/reducers/app-reducer";
+
 export type FilterType = "all" | "active" | "completed"
 
 export type TodolistType = {
@@ -9,6 +11,7 @@ export type TodolistType = {
 
 export type TodolistDomainType = TodolistType & {
     filter: FilterType
+    entityStatus: StatusType
 }
 
 export type TaskType = {
