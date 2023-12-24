@@ -1,5 +1,11 @@
 import {AllTasksType, TaskPriorities, TaskStatuses, TaskType, UpdateTaskModelType} from "../../type/type";
-import {AddTodolistACType, GetTodolistACType, RemoveTodolistACType, setEntityStatusAC} from "./todolist-reducer";
+import {
+    AddTodolistACType,
+    GetTodolistACType,
+    LogoutAppType,
+    RemoveTodolistACType,
+    setEntityStatusAC
+} from "./todolist-reducer";
 import {Dispatch} from "redux";
 import {todolistsApi} from "../../api/todolistsApi";
 import {RootStateType} from "../store";
@@ -55,6 +61,9 @@ export const tasksReducer = (state = initState, action: ActionType): AllTasksTyp
                     .map(t => t.id === action.payload.taskID ? {...t, ...action.payload.modal} : t)
             }
         }
+        case "LOGOUT-APP": {
+            return {}
+        }
         default: {
             return state
         }
@@ -100,14 +109,14 @@ export const updateTaskAC = (todolistID: string, taskID: string, modal: UpdateTa
 
 // thunks
 export const addTaskTC = (todolistID: string, title: string) => (dispatch: Dispatch) => {
-    dispatch(setAppStatus('loading'))
-    dispatch(setEntityStatusAC('loading', todolistID))
+    dispatch(setAppStatus("loading"))
+    dispatch(setEntityStatusAC("loading", todolistID))
     todolistsApi.createTask(todolistID, title)
         .then(response => {
             if (response.data.resultCode === 0) {
                 dispatch(addTaskAC(todolistID, response.data.data.item))
-                dispatch(setAppStatus('succeed'))
-                dispatch(setEntityStatusAC('succeed', todolistID))
+                dispatch(setAppStatus("succeed"))
+                dispatch(setEntityStatusAC("succeed", todolistID))
             } else {
                 handlerServerAppError(response.data, dispatch)
             }
@@ -153,14 +162,14 @@ export const updateTaskTC = (todolistID: string, taskID: string, update: UpdateD
     }
 }
 export const deleteTaskTC = (todolistID: string, taskID: string) => (dispatch: Dispatch) => {
-    dispatch(setAppStatus('loading'))
-    dispatch(setEntityStatusAC('loading', todolistID))
+    dispatch(setAppStatus("loading"))
+    dispatch(setEntityStatusAC("loading", todolistID))
     todolistsApi.deleteTask(todolistID, taskID)
         .then(response => {
             if (response.data.resultCode === 0) {
                 dispatch(removeTaskAC(todolistID, taskID))
-                dispatch(setAppStatus('succeed'))
-                dispatch(setEntityStatusAC('succeed', todolistID))
+                dispatch(setAppStatus("succeed"))
+                dispatch(setEntityStatusAC("succeed", todolistID))
             } else {
                 handlerServerAppError(response.data, dispatch)
             }
@@ -184,6 +193,7 @@ type ActionType =
     | RemoveTodolistACType
     | GetTodolistACType
     | GetTaskACType
+    | LogoutAppType
 
 type GetStoreStateType = () => RootStateType
 

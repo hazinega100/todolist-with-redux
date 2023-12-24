@@ -30,6 +30,9 @@ export const todolistReducer = (state = initState, action: ActionType): Todolist
         case "CHANGE-ENTITY-STATUS": {
             return state.map(tl => tl.id === action.payload.todolistID ? {...tl, entityStatus: action.payload.status} : tl)
         }
+        case "LOGOUT-APP": {
+            return []
+        }
         default: {
             return state
         }
@@ -85,6 +88,12 @@ export const setEntityStatusAC = (status: StatusType, todolistID: string) => {
             todolistID,
             status
         }
+    } as const
+}
+
+export const logoutAppAC = () => {
+    return {
+        type: "LOGOUT-APP"
     } as const
 }
 
@@ -159,6 +168,7 @@ export type AddTodolistACType = ReturnType<typeof addTodolistAC>
 export type RemoveTodolistACType = ReturnType<typeof removeTodolistAC>
 type ChangeTodolistFilterType = ReturnType<typeof changeFilterAC>
 type ChangeTitleTodolistType = ReturnType<typeof changeTitleTodolistAC>
+export type LogoutAppType = ReturnType<typeof logoutAppAC>
 
 type ActionType =
     | AddTodolistACType
@@ -167,3 +177,4 @@ type ActionType =
     | GetTodolistACType
     | ChangeTitleTodolistType
     | ReturnType<typeof setEntityStatusAC>
+    | LogoutAppType

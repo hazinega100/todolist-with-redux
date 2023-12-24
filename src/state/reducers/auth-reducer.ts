@@ -1,6 +1,7 @@
 import {Dispatch} from "redux";
 import {setError, setAppStatus} from "./app-reducer";
 import {authApi, LoginParamsType} from "../../api/authApi";
+import {logoutAppAC} from "./todolist-reducer";
 
 const initState: InitStateType = {
     isLoggedIn: false,
@@ -57,6 +58,7 @@ export const setLogOutTC = () => (dispatch: Dispatch) => {
             if (res.data.resultCode === 0) {
                 dispatch(setAppStatus('idle'))
                 dispatch(setLogin(false))
+                dispatch(logoutAppAC())
             }
         })
         .catch(error => {
