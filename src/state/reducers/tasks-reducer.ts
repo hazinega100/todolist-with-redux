@@ -1,16 +1,10 @@
-import {
-    AllTasksType,
-    ResponseTimeType,
-    TaskPriorities,
-    TaskStatuses,
-    TaskType,
-    UpdateTaskModelType
-} from "../../type/type";
-import {AddTodolistACType, GetTodolistACType, RemoveTodolistACType} from "./todolist-reducer";
+import {AllTasksType, TaskPriorities, TaskStatuses, TaskType, UpdateTaskModelType} from "../../type/type";
+import {AddTodolistACType, GetTodolistACType, RemoveTodolistACType, setEntityStatusAC} from "./todolist-reducer";
 import {Dispatch} from "redux";
 import {todolistsApi} from "../../api/todolistsApi";
 import {RootStateType} from "../store";
-import {setError, setAppStatus} from "./app-reducer";
+import {setAppStatus} from "./app-reducer";
+import {handlerServerAppError, handlerServerNetworkError} from "../../utils/error-utils";
 
 // state
 const initState: AllTasksType = {}
@@ -107,19 +101,19 @@ export const updateTaskAC = (todolistID: string, taskID: string, modal: UpdateTa
 // thunks
 export const addTaskTC = (todolistID: string, title: string) => (dispatch: Dispatch) => {
     dispatch(setAppStatus('loading'))
+    dispatch(setEntityStatusAC('loading', todolistID))
     todolistsApi.createTask(todolistID, title)
         .then(response => {
             if (response.data.resultCode === 0) {
                 dispatch(addTaskAC(todolistID, response.data.data.item))
                 dispatch(setAppStatus('succeed'))
+                dispatch(setEntityStatusAC('succeed', todolistID))
             } else {
-                if (response.data.messages.length) {
-                    dispatch(setError(response.data.messages[0]))
-                    dispatch(setAppStatus('failed'))
-                } else {
-                    dispatch(setError('some error occurred'))
-                }
+                handlerServerAppError(response.data, dispatch)
             }
+        })
+        .catch(error => {
+            handlerServerNetworkError(error.message, dispatch, todolistID)
         })
 }
 export const getTasksTC = (todolistID: string) => (dispatch: Dispatch) => {
@@ -146,22 +140,33 @@ export const updateTaskTC = (todolistID: string, taskID: string, update: UpdateD
             }
             todolistsApi.updateTask(todolistID, taskID, model)
                 .then(response => {
-                    dispatch(updateTaskAC(todolistID, taskID, model))
+                    if (response.data.resultCode === 0) {
+                        dispatch(updateTaskAC(todolistID, taskID, model))
+                    } else {
+                        handlerServerAppError(response.data, dispatch)
+                    }
                 })
                 .catch(error => {
-                    throw Error("Not internet", error)
+                    handlerServerNetworkError(error.message, dispatch)
                 })
         }
     }
 }
-export const deleteTaskTC = (todolistID: string, taskID: string, setDisabled: ResponseTimeType) => (dispatch: Dispatch) => {
-    setDisabled(true)
+export const deleteTaskTC = (todolistID: string, taskID: string) => (dispatch: Dispatch) => {
     dispatch(setAppStatus('loading'))
+    dispatch(setEntityStatusAC('loading', todolistID))
     todolistsApi.deleteTask(todolistID, taskID)
         .then(response => {
-            setDisabled(false)
-            dispatch(removeTaskAC(todolistID, taskID))
-            dispatch(setAppStatus('idle'))
+            if (response.data.resultCode === 0) {
+                dispatch(removeTaskAC(todolistID, taskID))
+                dispatch(setAppStatus('succeed'))
+                dispatch(setEntityStatusAC('succeed', todolistID))
+            } else {
+                handlerServerAppError(response.data, dispatch)
+            }
+        })
+        .catch(error => {
+            handlerServerNetworkError(error.message, dispatch, todolistID)
         })
 }
 

@@ -1,4 +1,4 @@
-import React, {ChangeEvent, useCallback, useEffect, useState} from "react";
+import React, {ChangeEvent, useCallback, useEffect} from "react";
 import {AllTasksType, FilterType, TaskStatuses} from "../type/type";
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatchType, RootStateType} from "../state/store";
@@ -31,7 +31,6 @@ export const Todolist: React.FC<TodolistPropsType> = React.memo((
 ) => {
     console.log("Todolist rendered")
     const tasksState = useSelector<RootStateType, AllTasksType>(state => state.tasks)
-    const [disabledTask, setDisabledTask] = useState(false)
     const dispatch = useDispatch<AppDispatchType>()
     useEffect(() => {
         dispatch(getTasksTC(todolistID))
@@ -58,7 +57,7 @@ export const Todolist: React.FC<TodolistPropsType> = React.memo((
 
     // removeTask
     const onClickRemoveTask = useCallback((taskID: string) => {
-        dispatch(deleteTaskTC(todolistID, taskID, setDisabledTask))
+        dispatch(deleteTaskTC(todolistID, taskID))
     }, [])
 
     // changeStatusTask
@@ -101,7 +100,7 @@ export const Todolist: React.FC<TodolistPropsType> = React.memo((
                                           onChange={(e) => changeStatusTask(e, task.id)}
                                 />
                                 <EditableSpan title={task.title} callBack={(newTitle) => changeTitleTask(task.id, newTitle)} />
-                                <DeleteButton remove={() => onClickRemoveTask(task.id)} disabled={disabledTask}/>
+                                <DeleteButton remove={() => onClickRemoveTask(task.id)} disabled={entityStatus === 'loading'}/>
                                 {/*<div>{task.addedDate}</div>*/}
                             </li>
                         )
